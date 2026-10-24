@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* Untitled UI greys. The orb is the only colour in the product. */
+:root {
+  --background: #ffffff;
+  --background-secondary: #fafafa;
+  --foreground: #181d27;
+  --foreground-secondary: #414651;
+  --foreground-tertiary: #535862;
+  --foreground-quaternary: #717680;
+  --border: #e9eaeb;
+  --border-strong: #d5d7da;
+  --primary: #0a0d12;
+  --primary-hover: #252b37;
+  --danger: #d92d20;
+  --danger-soft: #fef3f2;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-tertiary: var(--foreground-tertiary);
+  --color-foreground-quaternary: var(--foreground-quaternary);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  letter-spacing: -0.011em;
+}
+
+@keyframes orb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orb-morph {
+  0%,
+  100% {
+    border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+  }
+  33% {
+    border-radius: 56% 44% 52% 48% / 47% 55% 45% 53%;
+  }
+  66% {
+    border-radius: 45% 55% 47% 53% / 54% 46% 54% 46%;
+  }
+}
+
+@keyframes ring-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Sign-up story: each step rises in once, in order (delay set inline), then stays so people read at their own pace. */
+@keyframes story-reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.story-step { animation: story-reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .story-step { animation: none !important; opacity: 1; transform: none; }
+}
