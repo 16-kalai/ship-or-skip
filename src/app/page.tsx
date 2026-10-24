@@ -80,7 +80,7 @@ function Hero() {
               Try a mock interview
             </Link>
           </div>
-          <p className="mt-5 text-[13.5px] text-foreground-quaternary">Voice-first · Talk, type or tap · Scored out of 10</p>
+          <p className="mt-5 text-[13.5px] text-foreground-quaternary">Practice in chat · Mock interviews by voice · Scored out of 10</p>
         </Reveal>
         <Reveal delay={150}>
           <div className="h-[620px] overflow-hidden rounded-[28px] shadow-[0_30px_80px_-30px_rgba(10,13,18,0.45)]">
@@ -202,7 +202,7 @@ function HowItWorks() {
 }
 
 const FEATURES = [
-  { icon: "🎙", title: `${BRAND.tutor}, your AI code buddy`, body: "Speaks every message out loud. Type, tap, or just talk back. Learning feels like a conversation, not a test." },
+  { icon: "💬", title: `${BRAND.tutor}, your AI code buddy`, body: "Practise in a chat that feels like a conversation, not a test. Tap a card, type your why, learn the fix." },
   { icon: "📈", title: "Problems that climb with you", body: "Your first ten are easy fundamentals. Then medium, then hard, in your own stack." },
   { icon: "🧠", title: "Code and logic", body: "Buggy code, wrong AI reasoning, bad estimates. The mistakes real AI makes at work." },
   { icon: "💡", title: "Nudges, not answers", body: "Like a good mentor: a hint that makes you think, then the fix and the rule to keep." },

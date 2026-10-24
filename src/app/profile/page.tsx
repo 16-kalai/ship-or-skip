@@ -15,7 +15,8 @@ import { getUser } from "@/lib/supabase/server";
 import { PROVISIONAL_BELOW, computeRating, ratingMeaning } from "@/lib/progress/rating";
 import { CoachButton } from "@/components/profile/coach-button";
 import type { StoredCoach } from "@/lib/coach/coach";
-import { askCoach, saveGithub } from "./actions";
+import { ShareProfile } from "@/components/profile/share-profile";
+import { siteOrigin } from "@/lib/site";
 
 const SITUATION_LABEL = {
   student: "Student",
@@ -61,9 +62,17 @@ async function ProfileBody() {
   const [{ data: saved }, { data: attemptRows }, progress] = await Promise.all([
     admin
       .from("profiles")
-      .select(`${PROFILE_COLUMNS}, ai_summary, ai_summary_count, coach_plan`)
+      .select(`${PROFILE_COLUMNS}, ai_summary, ai_summary_count, coach_plan, share_handle, shared_at`)
       .eq("user_id", user.id)
-      .maybeSingle<Profile & { ai_summary: Summary | null; ai_summary_count: number; coach_plan: StoredCoach | null }>(),
+      .maybeSingle<
+        Profile & {
+          ai_summary: Summary | null;
+          ai_summary_count: number;
+          coach_plan: StoredCoach | null;
+          share_handle: string | null;
+          shared_at: string | null;
+        }
+      >(),
     admin
       .from("attempts")
       .select("problem_id, problem, correct, score, tries, breakdown, graded_at")
@@ -85,12 +94,7 @@ async function ProfileBody() {
       {/* Who they are */}
       <section className="flex flex-col gap-5 rounded-3xl border border-border bg-background p-6 sm:flex-row sm:items-center">
         <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary text-[28px] font-semibold text-white ring-4 ring-background-secondary">
-          {profile.github ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={`https://github.com/${profile.github}.png?size=160`} alt="" className="size-full object-cover" />
-          ) : (
-            fullName.charAt(0).toUpperCase()
-          )}
+          {fullName.charAt(0).toUpperCase()}
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2">
           <div>
@@ -114,21 +118,11 @@ async function ProfileBody() {
             <p className="text-[13.5px] text-foreground-tertiary">Here to: {goalLabels.join(" · ")}</p>
           )}
         </div>
-        <form action={saveGithub} className="flex items-center gap-2 sm:self-start">
-          <label className="flex items-center gap-2 rounded-xl border border-border-strong bg-background px-3 py-2 text-[14px] focus-within:border-foreground-quaternary">
-            <GithubIcon />
-            <input
-              name="github"
-              defaultValue={profile.github ?? ""}
-              placeholder="GitHub username"
-              aria-label="GitHub username"
-              className="w-36 bg-transparent outline-none placeholder:text-foreground-quaternary"
-            />
-          </label>
-          <button type="submit" className="rounded-xl bg-primary px-3.5 py-2 text-[14px] font-semibold text-white hover:bg-primary-hover">
-            Save
-          </button>
-        </form>
+        <ShareProfile
+          initialUrl={saved?.share_handle && saved?.shared_at ? `${await siteOrigin()}/u/${saved.share_handle}` : null}
+          name={fullName}
+          score={computeRating(graded).score}
+        />
       </section>
 
       {/* The score a hiring manager reads first */}
@@ -338,12 +332,13 @@ function CoachCard({ coach }: { coach: StoredCoach | null }) {
                   : coach.status === "review"
                     ? "The Coach agent's plan is being reviewed by a person · Rev's plan for now"
                     : "Planned by Rev"}
+              {coach?.at && (
+                <> · made {new Date(coach.at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" })}</>
+              )}
             </span>
           </div>
         </div>
-        <form action={askCoach}>
-          <CoachButton label={plan ? "Ask my coach for a new plan" : "Ask my coach for a plan"} />
-        </form>
+        <CoachButton label={plan ? "Ask my coach for a new plan" : "Ask my coach for a plan"} />
       </div>
       {plan ? (
         <div className="mt-5 flex flex-col gap-4">
@@ -416,10 +411,3 @@ function Empty({ text, cta = false }: { text: string; cta?: boolean }) {
   );
 }
 
-function GithubIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="size-4 text-foreground-secondary" fill="currentColor" aria-hidden="true">
-      <path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z" />
-    </svg>
-  );
-}

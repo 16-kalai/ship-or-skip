@@ -42,6 +42,13 @@ export async function proxy(request: NextRequest) {
   }
 
   if (signedIn && AUTH_PAGES.includes(path)) {
+    // A token can outlive its account (e.g. the user was deleted). Confirm with Supabase before
+    // sending them into the app; otherwise the app sends them back here and they bounce forever.
+    const { data: verified, error } = await supabase.auth.getUser();
+    if (error || !verified.user) {
+      await supabase.auth.signOut({ scope: "local" });
+      return response;
+    }
     const url = request.nextUrl.clone();
     url.pathname = HOME_PATH;
     url.search = "";

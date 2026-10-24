@@ -52,7 +52,7 @@ async function Conversation() {
       initialStage={stage}
       user={{
         initial: (firstName ?? user.email ?? "?").charAt(0).toUpperCase(),
-        avatarUrl: profile.github ? `https://github.com/${profile.github}.png?size=96` : null,
+        avatarUrl: null,
       }}
     />
   );
