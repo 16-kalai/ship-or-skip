@@ -1,0 +1,34 @@
+# Render Blueprint for Ship or Skip. Secrets are entered in Render (sync: false), never committed.
+services:
+  - type: web
+    name: ship-or-skip
+    runtime: node
+    # Closest Render region to India.
+    region: singapore
+    # Free spins down after 15 minutes idle (first visit then takes ~50 s). Use starter or higher
+    # while real users are on it.
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AGENTICORG_API_KEY
+        sync: false
+      - key: AGENTICORG_COACH_AGENT_ID
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
